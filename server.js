@@ -16,7 +16,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
 
-// Set static folder -->
+// Set static folder --> Statik klasör ayarla
 app.use(express.static(path.join(__dirname, 'public')));
 
 const botName = 'ChatCord Bot';
@@ -29,10 +29,10 @@ io.on('connection', socket => {
 
         socket.join(user.room);
 
-        // Welcome current user -->
+        // Welcome current user -->  Mevcut kullanıcıya hoşgeldiniz
         socket.emit('message', formatMessage(botName, 'Welcome to ChatCord!'));
 
-    // Broadcast when a user connects -->
+    // Broadcast when a user connects --> Bir kullanıcı bağlandığında yayınla
     socket.broadcast
       .to(user.room)
       .emit(
@@ -40,21 +40,21 @@ io.on('connection', socket => {
         formatMessage(botName, `${user.username} has joined the chat`)
     );
 
-    // Send users and room info -->
+    // Send users and room info --> Kullanıcıları ve oda bilgilerini gönder
     io.to(user.room).emit('roomUsers', {
         room: user.room,
         users: getRoomUsers(user.room)
     });
 });
 
-    // Listen for chatMessage -->
+    // Listen for chatMessage --> Sohbeti okuma veya dinleme
     socket.on('chatMessage', msg => {
         const user = getCurrentUser(socket.id);
 
         io.to(user.room).emit('message', formatMessage(user.username, msg));
 });
 
-     //Runs when client disconnects -->
+     // Runs when client disconnects --> İstemci bağlantısı kesildiğinde çalışır
      socket.on('disconnect', () => {
         
         const user = userLeave(socket.id);
@@ -65,7 +65,7 @@ io.on('connection', socket => {
                 formatMessage(botName, `${user.username} has left the chat`)
             );
 
-            // Send users and room info -->
+            // Send users and room info --> Kullanıcıları ve oda bilgilerini gönder
             io.to(user.room).emit('roomUsers', {
                 room: user.room,
                 users: getRoomUsers(user.room)
